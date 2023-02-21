@@ -54,7 +54,19 @@
 			transform: translateY(0);
 		}
 
+		body[sidebar="true"] #overlay {
+			display: block;
+		}
+
+		body[sidebar="true"] #inbox {
+			transform: translateX(0);
+		}
+
 		@media(min-width:768px) {
+			#overlay {
+				display: none !important;
+			}
+
 			body[mailbox="true"] #mail {
 				display: block;
 			}
@@ -74,12 +86,14 @@
 		}
 	</style>
 
+
+
 	<section class="h-screen flex">
 
 		<section id="sidebar"
 			class="flex flex-col justify-between items-center flex-none py-4 w-16 overflow-y-auto shadow-lg bg-white md:shadow-none">
 
-			<a id="site-logo" class="text-green-500 md:mt-4" onclick="openSideBar()">
+			<a id="site-logo" class="text-green-500 md:mt-4" onclick="toggleSidebar()">
 				<svg width="32px" height="32px" role="img" viewBox="0 0 24 24" fill="currentColor"
 					xmlns="http://www.w3.org/2000/svg">
 					<title>ASKfm icon</title>
@@ -150,22 +164,22 @@
 				<img src="./assets/keneki.jpg" class="w-8 h-8 rounded-full" />
 			</a>
 
-
 		</section>
 
 		<section id="inbox"
 			class="w-64 h-screen border-l border-gray-200 rounded-tl-xl flex-none overflow-y-auto bg-white fixed z-20 
-			shadow-lg tleft md:static md:shadow-none transition-transform transform -translate-x-full md:transform-none lg:py-4">
+			shadow-lg tleft md:static md:shadow-none transition-transform transform -translate-x-full md:transform-none md:py-4">
 
 			<div class="title flex items-center border-b h-16 px-4">
-				<a class="p-2 cursor-pointer text-gray-400 bg-gray-100 rounded-lg inline-block" onclick="openSideBar()">
+				<a class="p-2 cursor-pointer text-gray-400 bg-gray-100 rounded-lg inline-block md:hidden mr-3"
+					onclick="toggleSidebar()">
 					<svg class="w-4 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
 						<path fill-rule="evenodd"
 							d="M15.28 5.22a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 000 1.06l6.25 6.25a.75.75 0 101.06-1.06L9.56 12l5.72-5.72a.75.75 0 000-1.06z">
 						</path>
 					</svg>
 				</a>
-				<h4 class="ml-3 text-lg font-semibold text-gray-800">MailBox</h4>
+				<h4 class="text-lg font-semibold text-gray-800">MailBox</h4>
 			</div>
 
 			<div class="p-4 space-y-6">
@@ -259,23 +273,14 @@
 					</div>
 
 					<div class="ml-3 relative">
-						<div id="dd-opener" class="text-gray-400 cursor-pointer">
+						<button id="dd-opener" class="text-gray-400 cursor-pointer">
 							<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
 								stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
 									d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
 								</path>
 							</svg>
-						</div>
-						<div id="dd-content"
-							class="z-20 hidden rounded bg-white text-left p-2 rounded absolute mt-4 right-0 w-28 text-gray-800 shadow-lg">
-							<a class="block w-full cursor-pointer px-2 py-1.5 rounded nowrap hover:bg-gray-100 text-sm">
-								View All
-							</a>
-							<a class="block w-full cursor-pointer px-2 py-1.5 rounded nowrap hover:bg-gray-100 text-sm">
-								Delete
-							</a>
-						</div>
+						</button>
 					</div>
 				</div>
 
@@ -554,36 +559,30 @@
 
 	<div id="overlay" class="fixed top-0 left-0 right-0 bottom-0 bg-gray-800 opacity-10 z-10 hidden"></div>
 
-
-	<script>
+	<script defer>
 		const msgs = document.querySelectorAll('.allmsgs > div');
 		const overlay = document.getElementById('overlay');
 		const mailCloser = document.getElementById('close-mail')
 		const bodyElement = document.getElementsByTagName('body')[0]
+
+		const toggleMailDetails = (state) => state ? bodyElement.setAttribute('mailbox', 'true') : bodyElement.removeAttribute('mailbox')
 
 		msgs.forEach(itm => {
 			itm.addEventListener('click', (e) => {
 				toggleMailDetails(true)
 			});
 		});
-
-		const toggleMailDetails = (state) => state ? bodyElement.setAttribute('mailbox', 'true') : bodyElement.removeAttribute('mailbox')
 		mailCloser.addEventListener('click', () => toggleMailDetails(false))
 
 
-		document.getElementById('dd-opener').addEventListener('click', (e) => tglDropDown());
-		overlay.addEventListener('click', (e) => openSideBar());
-
-		function tglDropDown() {
-			document.getElementById('dd-content').classList.toggle('hidden');
-		}
-
-		function openSideBar() {
-			document.getElementById('overlay').classList.toggle('hidden');
-			document.getElementById('inbox').classList.toggle('-translate-x-full');
+		overlay.addEventListener('click', (e) => toggleSidebar());
+		function toggleSidebar() {
+			const current = Boolean(bodyElement.getAttribute('sidebar'))
+			!current ? bodyElement.setAttribute('sidebar', 'true') : bodyElement.removeAttribute('sidebar')
 		}
 
 	</script>
+
 
 </body>
 
